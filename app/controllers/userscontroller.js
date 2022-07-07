@@ -15,5 +15,5 @@ router.get('/verify',usersservice.verify)
 router.get('/list', usersservice.list);
 router.get('/:id', usersservice.show);
 router.post('/create', usersservice.create);
-router.delete('/:personid/:loginid/:userid', usersservice.remove);
+router.delete('/delete/:personid/:loginid/:userid', usersservice.remove);
 export default router;

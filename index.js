@@ -1,48 +1,53 @@
+import bcrypt from "bcryptjs";
 import bodyParser from "body-parser";
 import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
-import db from "./app/models/main.js";
-import countrycontroller from "./app/controllers/countrycontroller.js";
+import jwt from "jsonwebtoken";
+import nodemailer from "nodemailer";
+import hbs from "nodemailer-express-handlebars";
+import path from "path";
+import swaggerjsdoc from "swagger-jsdoc";
+import swaggerUi from "swagger-ui-express";
+import audiocontroller from "./app/controllers/audiocontroller.js";
 import categorydetailcontroller from "./app/controllers/categorydetailscontroller.js";
+import citycontroller from "./app/controllers/citycontroller.js";
 import companydetailscontroller from "./app/controllers/companydetailscontroller.js";
 import contentmastercontroller from "./app/controllers/contentmastercontroller.js";
+import countrycontroller from "./app/controllers/countrycontroller.js";
 import languagecontroller from "./app/controllers/languagecontroller.js";
+import logincontroller from "./app/controllers/logincontroller.js";
+import paymentcontroller from "./app/controllers/paymentcontroller.js";
+import personcontroller from "./app/controllers/personcontroller.js";
+import photocontroller from "./app/controllers/photocontroller.js";
 import regionaldetailscontroller from "./app/controllers/regionaldetailscontroller.js";
 import religioncontroller from "./app/controllers/religioncontroller.js";
-import subscribercontentcontroller from "./app/controllers/subscribercontentcontroller.js";
+import reviewcontroller from "./app/controllers/reviewcontroller.js";
+import rolecontroller from "./app/controllers/rolecontroller.js";
 import statecontroller from "./app/controllers/statecontroller.js";
 import subcatclassificationcontroller from "./app/controllers/subcatclassificationcontroller.js";
 import subcategorycontroller from "./app/controllers/subcategorycontroller.js";
 import subscribercontentauthcontroller from "./app/controllers/subscribercontentauthcontroller.js";
+import subscribercontentcontroller from "./app/controllers/subscribercontentcontroller.js";
+import subscriberdetailscontroller from "./app/controllers/subscriberdetailscontroller.js";
 import subscriberpersonalinfocontroller from "./app/controllers/subscriberpersonalinfocontroller.js";
 import subscriberprofessionalinfocontroller from "./app/controllers/subscriberprofessionalinfocontroller.js";
-import subscriptionmastercontroller from "./app/controllers/subscriptionmastercontroller.js"
+import subscriptionmastercontroller from "./app/controllers/subscriptionmastercontroller.js";
 import usersamplecontroller from "./app/controllers/usersamplecontroller.js";
-import reviewcontroller from "./app/controllers/reviewcontroller.js"
-import photocontroller from "./app/controllers/photocontroller.js"
-import videocontroller from "./app/controllers/videocontroller.js"
-import userscontroller from "./app/controllers/userscontroller.js"
-import rolecontroller from "./app/controllers/rolecontroller.js";
-import subscriberdetailscontroller from "./app/controllers/subscriberdetailscontroller.js";
-import citycontroller from "./app/controllers/citycontroller.js";
-import audiocontroller from "./app/controllers/audiocontroller.js";
-import personcontroller from "./app/controllers/personcontroller.js";
-import logincontroller from "./app/controllers/logincontroller.js";
-import swaggerUi from "swagger-ui-express";
-import swaggerjsdoc from "swagger-jsdoc";
-import upload from "../sirius-api/app/middleware/upload.js";
-import videoUpload from "../sirius-api/app/middleware/videoUpload.js";
-import audio from "../sirius-api/app/middleware/audio.js";
-import paymentcontroller from "./app/controllers/paymentcontroller.js";
+import userscontroller from "./app/controllers/userscontroller.js";
+import videocontroller from "./app/controllers/videocontroller.js";
 import verifyToken from "./app/middleware/auth.js";
-import nodemailer from "nodemailer";
-import hbs from "nodemailer-express-handlebars";
-import path from "path";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import rolebaseauth from "../sirius-api/app/middleware/roleauth.js";
+import db from "./app/models/main.js";
 const app = express();
+
+// const express = require('express');
+app.use(express.json());
+
+app.get('/', (req, res) => {
+    res.send('Backend welcomes you');
+});
+
+
 app.use(cors());
 dotenv.config();
 
@@ -2175,31 +2180,31 @@ app.get('/api/video001wb/:id', (req, res) => {
  *                          $ref: '#/components/schemas/video001wb'
  */
 
-app.post('/api/video001wb/video', [videoUpload.single("content")], (req, res) => {
-    const video001wb = new Video001wb();
-    video001wb.contentid = req.body.contentid;
-    video001wb.content = req.file.path;
-    video001wb.fieldname = req.file.fieldname;
-    video001wb.originalname = req.file.originalname;
-    video001wb.filename = req.file.filename;
-    video001wb.status = req.body.status;
-    video001wb.inserteduser = req.body.inserteduser;
-    video001wb.inserteddatetime = req.body.inserteddatetime;
-    video001wb.updateduser = req.body.updateduser;
-    video001wb.updateddatetime = req.body.updateddatetime;
-    Contentmaster001mb.findOne({ _id: video001wb.contentid }, (err, user) => {
-        if (user) {
-            user.video.push(video001wb);
-            user.save();
-            video001wb.save()
-            return res.json({ message: 'Video created!' });
-        } else {
-            return res.status(500).json({
-                message: 'Error when creating video001wb'
-            });
-        }
-    });
-})
+// app.post('/api/video001wb/video', [videoUpload.single("content")], (req, res) => {
+//     const video001wb = new Video001wb();
+//     video001wb.contentid = req.body.contentid;
+//     video001wb.content = req.file.path;
+//     video001wb.fieldname = req.file.fieldname;
+//     video001wb.originalname = req.file.originalname;
+//     video001wb.filename = req.file.filename;
+//     video001wb.status = req.body.status;
+//     video001wb.inserteduser = req.body.inserteduser;
+//     video001wb.inserteddatetime = req.body.inserteddatetime;
+//     video001wb.updateduser = req.body.updateduser;
+//     video001wb.updateddatetime = req.body.updateddatetime;
+//     Contentmaster001mb.findOne({ _id: video001wb.contentid }, (err, user) => {
+//         if (user) {
+//             user.video.push(video001wb);
+//             user.save();
+//             video001wb.save()
+//             return res.json({ message: 'Video created!' });
+//         } else {
+//             return res.status(500).json({
+//                 message: 'Error when creating video001wb'
+//             });
+//         }
+//     });
+// })
 
 
 /**
@@ -2235,46 +2240,46 @@ app.post('/api/video001wb/video', [videoUpload.single("content")], (req, res) =>
  *                             $ref: '#/components/schemas/video001wb'
  */
 
-app.put('/api/video001wb/:id', [videoUpload.single("content")], (req, res) => {
-    var id = req.params.id;
+// app.put('/api/video001wb/:id', [videoUpload.single("content")], (req, res) => {
+//     var id = req.params.id;
 
-    Video001wb.findOne({ _id: id }, function (err, video001wb) {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error when getting video001wb',
-                error: err
-            });
-        }
+//     Video001wb.findOne({ _id: id }, function (err, video001wb) {
+//         if (err) {
+//             return res.status(500).json({
+//                 message: 'Error when getting video001wb',
+//                 error: err
+//             });
+//         }
 
-        if (!video001wb) {
-            return res.status(404).json({
-                message: 'No such video001wb'
-            });
-        }
+//         if (!video001wb) {
+//             return res.status(404).json({
+//                 message: 'No such video001wb'
+//             });
+//         }
 
-        video001wb.contentid = req.body.contentid ? req.body.contentid : video001wb.contentid;
-        video001wb.fieldname = req.file.fieldname ? req.file.fieldname : video001wb.fieldname;
-        video001wb.filename = req.file.filename ? req.file.filename : video001wb.filename;
-        video001wb.originalname = req.file.originalname ? req.file.originalname : video001wb.originalname;
-        video001wb.status = req.body.status ? req.body.status : video001wb.status;
-        video001wb.content = req.file.path ? req.file.path : video001wb.content;
-        video001wb.inserteduser = req.body.inserteduser ? req.body.inserteduser : video001wb.inserteduser;
-        video001wb.inserteddatetime = req.body.inserteddatetime ? req.body.inserteddatetime : video001wb.inserteddatetime;
-        video001wb.updateduser = req.body.updateduser ? req.body.updateduser : video001wb.updateduser;
-        video001wb.updateddatetime = req.body.updateddatetime ? req.body.updateddatetime : video001wb.updateddatetime;
+//         video001wb.contentid = req.body.contentid ? req.body.contentid : video001wb.contentid;
+//         video001wb.fieldname = req.file.fieldname ? req.file.fieldname : video001wb.fieldname;
+//         video001wb.filename = req.file.filename ? req.file.filename : video001wb.filename;
+//         video001wb.originalname = req.file.originalname ? req.file.originalname : video001wb.originalname;
+//         video001wb.status = req.body.status ? req.body.status : video001wb.status;
+//         video001wb.content = req.file.path ? req.file.path : video001wb.content;
+//         video001wb.inserteduser = req.body.inserteduser ? req.body.inserteduser : video001wb.inserteduser;
+//         video001wb.inserteddatetime = req.body.inserteddatetime ? req.body.inserteddatetime : video001wb.inserteddatetime;
+//         video001wb.updateduser = req.body.updateduser ? req.body.updateduser : video001wb.updateduser;
+//         video001wb.updateddatetime = req.body.updateddatetime ? req.body.updateddatetime : video001wb.updateddatetime;
 
-        video001wb.save(function (err, video001wb) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when updating video001wb.',
-                    error: err
-                });
-            }
+//         video001wb.save(function (err, video001wb) {
+//             if (err) {
+//                 return res.status(500).json({
+//                     message: 'Error when updating video001wb.',
+//                     error: err
+//                 });
+//             }
 
-            return res.json(video001wb);
-        });
-    });
-});
+//             return res.json(video001wb);
+//         });
+//     });
+// });
 
 
 /**
@@ -2455,31 +2460,31 @@ app.get('/api/audio001wb/:id', (req, res) => {
  *                          $ref: '#/components/schemas/audio001wb'
  */
 
-app.post('/api/audio001wb/audio', [audio.single("content")], (req, res) => {
-    const audio001wb = new Audio001wb();
-    audio001wb.content = req.file.path;
-    audio001wb.fieldname = req.file.fieldname;
-    audio001wb.originalname = req.file.originalname;
-    audio001wb.filename = req.file.filename;
-    audio001wb.status = req.body.status;
-    audio001wb.contentid = req.body.contentid;
-    audio001wb.inserteduser = req.body.inserteduser;
-    audio001wb.inserteddatetime = req.body.inserteddatetime;
-    audio001wb.updateduser = req.body.updateduser;
-    audio001wb.updateddatetime = req.body.updateddatetime;
-    Contentmaster001mb.findOne({ _id: audio001wb.contentid }, (err, user) => {
-        if (user) {
-            user.audio.push(audio001wb);
-            user.save();
-            audio001wb.save();
-            return res.json({ message: 'Audio created!' });
-        }else {
-            return res.status(500).json({
-                message: 'Error when creating audio001wb'
-            });
-        }
-    });
-})
+// app.post('/api/audio001wb/audio', [audio.single("content")], (req, res) => {
+//     const audio001wb = new Audio001wb();
+//     audio001wb.content = req.file.path;
+//     audio001wb.fieldname = req.file.fieldname;
+//     audio001wb.originalname = req.file.originalname;
+//     audio001wb.filename = req.file.filename;
+//     audio001wb.status = req.body.status;
+//     audio001wb.contentid = req.body.contentid;
+//     audio001wb.inserteduser = req.body.inserteduser;
+//     audio001wb.inserteddatetime = req.body.inserteddatetime;
+//     audio001wb.updateduser = req.body.updateduser;
+//     audio001wb.updateddatetime = req.body.updateddatetime;
+//     Contentmaster001mb.findOne({ _id: audio001wb.contentid }, (err, user) => {
+//         if (user) {
+//             user.audio.push(audio001wb);
+//             user.save();
+//             audio001wb.save();
+//             return res.json({ message: 'Audio created!' });
+//         }else {
+//             return res.status(500).json({
+//                 message: 'Error when creating audio001wb'
+//             });
+//         }
+//     });
+// })
 
 
 /**
@@ -2515,45 +2520,45 @@ app.post('/api/audio001wb/audio', [audio.single("content")], (req, res) => {
  *                            $ref: '#/components/schemas/audio001wb'
  */
 
-app.put('/api/audio001wb/:id', [audio.single("content")], (req, res) => {
-    var id = req.params.id;
-    Audio001wb.findOne({ _id: id }, function (err, audio001wb) {
-        if (err) {
-            return res.status(500).json({
-                message: 'Error when getting audio001wb',
-                error: err
-            });
-        }
+// app.put('/api/audio001wb/:id', [audio.single("content")], (req, res) => {
+//     var id = req.params.id;
+//     Audio001wb.findOne({ _id: id }, function (err, audio001wb) {
+//         if (err) {
+//             return res.status(500).json({
+//                 message: 'Error when getting audio001wb',
+//                 error: err
+//             });
+//         }
 
-        if (!audio001wb) {
-            return res.status(404).json({
-                message: 'No such audio001wb'
-            });
-        }
+//         if (!audio001wb) {
+//             return res.status(404).json({
+//                 message: 'No such audio001wb'
+//             });
+//         }
 
-        audio001wb.contentid = req.body.contentid ? req.body.contentid : audio001wb.contentid;
-        audio001wb.fieldname = req.file.fieldname ? req.file.fieldname : audio001wb.fieldname;
-        audio001wb.filename = req.file.filename ? req.file.filename : audio001wb.filename;
-        audio001wb.originalname = req.file.originalname ? req.file.originalname : audio001wb.originalname;
-        audio001wb.status = req.body.status ? req.body.status : audio001wb.status;
-        audio001wb.content = req.file.path ? req.file.path : audio001wb.content;
-        audio001wb.inserteduser = req.body.inserteduser ? req.body.inserteduser : audio001wb.inserteduser;
-        audio001wb.inserteddatetime = req.body.inserteddatetime ? req.body.inserteddatetime : audio001wb.inserteddatetime;
-        audio001wb.updateduser = req.body.updateduser ? req.body.updateduser : audio001wb.updateduser;
-        audio001wb.updateddatetime = req.body.updateddatetime ? req.body.updateddatetime : audio001wb.updateddatetime;
+//         audio001wb.contentid = req.body.contentid ? req.body.contentid : audio001wb.contentid;
+//         audio001wb.fieldname = req.file.fieldname ? req.file.fieldname : audio001wb.fieldname;
+//         audio001wb.filename = req.file.filename ? req.file.filename : audio001wb.filename;
+//         audio001wb.originalname = req.file.originalname ? req.file.originalname : audio001wb.originalname;
+//         audio001wb.status = req.body.status ? req.body.status : audio001wb.status;
+//         audio001wb.content = req.file.path ? req.file.path : audio001wb.content;
+//         audio001wb.inserteduser = req.body.inserteduser ? req.body.inserteduser : audio001wb.inserteduser;
+//         audio001wb.inserteddatetime = req.body.inserteddatetime ? req.body.inserteddatetime : audio001wb.inserteddatetime;
+//         audio001wb.updateduser = req.body.updateduser ? req.body.updateduser : audio001wb.updateduser;
+//         audio001wb.updateddatetime = req.body.updateddatetime ? req.body.updateddatetime : audio001wb.updateddatetime;
 
-        audio001wb.save(function (err, audio001wb) {
-            if (err) {
-                return res.status(500).json({
-                    message: 'Error when updating audio001wb.',
-                    error: err
-                });
-            }
+//         audio001wb.save(function (err, audio001wb) {
+//             if (err) {
+//                 return res.status(500).json({
+//                     message: 'Error when updating audio001wb.',
+//                     error: err
+//                 });
+//             }
 
-            return res.json(audio001wb);
-        });
-    });
-});
+//             return res.json(audio001wb);
+//         });
+//     });
+// });
 /**
  * @swagger
  * /api/audio001wb/{id}:
@@ -3513,24 +3518,24 @@ app.get('/api/language001mb/:id', (req, res) => {
  *         description: failed
  */
 
-app.post('/api/language001mb/language', verifyToken, rolebaseauth(["admin"]), (req, res) => {
-    const language001mb = new Language001mb()
-    language001mb.languagename = req.body.languagename;
-    language001mb.languagedesc = req.body.languagedesc;
-    language001mb.status = req.body.status;
-    language001mb.inserteduser = req.body.inserteduser;
-    language001mb.inserteddatetime = req.body.inserteddatetime;
-    language001mb.updateduser = req.body.updateduser;
-    language001mb.updateddatetime = req.body.updateddatetime;
+// app.post('/api/language001mb/language', verifyToken, rolebaseauth(["admin"]), (req, res) => {
+//     const language001mb = new Language001mb()
+//     language001mb.languagename = req.body.languagename;
+//     language001mb.languagedesc = req.body.languagedesc;
+//     language001mb.status = req.body.status;
+//     language001mb.inserteduser = req.body.inserteduser;
+//     language001mb.inserteddatetime = req.body.inserteddatetime;
+//     language001mb.updateduser = req.body.updateduser;
+//     language001mb.updateddatetime = req.body.updateddatetime;
 
-    language001mb.save()
-        .then((result) => {
-            return res.json({ message: 'language created!' });
-        })
-        .catch((error) => {
-            return res.status(500).json({ error });
-        });
-})
+//     language001mb.save()
+//         .then((result) => {
+//             return res.json({ message: 'language created!' });
+//         })
+//         .catch((error) => {
+//             return res.status(500).json({ error });
+//         });
+// })
 /**
  * @swagger
  * /api/language001mb/{id}:

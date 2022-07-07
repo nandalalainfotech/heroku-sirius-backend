@@ -30,8 +30,7 @@ const subscriberdetails001wb = mongoose.model(
         'updateddatetime': String,
         'subscapproval': Boolean,
         'approvedby': String,
-        'approvedon': String,
-        'monthlyregistration':Date
+        'approvedon': String
     },
         { timestamps: false }));
 
