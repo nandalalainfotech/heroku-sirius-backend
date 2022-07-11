@@ -679,10 +679,10 @@ app.use("/api/verifyToken", verifyToken);
 
 const PORT = process.env.PORT || 8081;
 // not need just for checking
-app.use(express.static(path.join(__dirname, 'public')));
-app.get('*', (req, res)=>{
-    res.sendFile(path.join(__dirname, 'public/index.html'));
-})
+// app.use(express.static(path.join(__dirname, 'public')));
+// app.get('*', (req, res)=>{
+//     res.sendFile(path.join(__dirname, 'public/index.html'));
+// })
 db.mongoose
     .connect(process.env.DATABASE_URI, {
         useNewUrlParser: true,
